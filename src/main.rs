@@ -15,7 +15,9 @@ fn main() {
     router.get("/_nodes", fake_nodes, "nodes");
     router.get("/_search", fake_search, "search");
 
-    fn handler(_: &mut Request) -> IronResult<Response> {
+    fn handler(request: &mut Request) -> IronResult<Response> {
+        println!("Got request from IP: {}", request.remote_addr);
+        
         let mut banner = String::from(r#"{
         "status" : 200,
         "name" : "%instance_name",
@@ -33,7 +35,9 @@ fn main() {
         Ok(Response::with((status::Ok, banner)))
     }
 
-    fn fake_nodes(_: &mut Request) -> IronResult<Response> {
+    fn fake_nodes(request: &mut Request) -> IronResult<Response> {
+        println!("Got request from IP: {}", request.remote_addr);
+        
         let mut response = String::from(r#"{
         "cluster_name" : "elasticsearch",
         "nodes" : {
@@ -90,7 +94,9 @@ fn main() {
         Ok(Response::with((status::Ok, response)))
     }
 
-    fn fake_search(_: &mut Request) -> IronResult<Response> {
+    fn fake_search(request: &mut Request) -> IronResult<Response> {
+        println!("Got request from IP: {}", request.remote_addr);
+        
         let response = r#"{
         "took" : 6,
         "timed_out" : false,
