@@ -10,6 +10,8 @@ const SPOOFED_VERSION: &str = "1.4.1";
 const SENSOR_IP: &str = "1.1.1.1";
 
 fn main() {
+    println!("winnie the search started");
+    
     let mut router = Router::new();
     router.get("/", handler, "index");
     router.get("/_nodes", fake_nodes, "nodes");
