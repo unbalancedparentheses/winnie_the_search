@@ -123,6 +123,6 @@ fn main() {
         Ok(Response::with((status::Ok, response)))
     }
 
-    let _server = Iron::new(router).http("localhost:3000").unwrap();
+    let _server = Iron::new(router).http("0.0.0.0:3000").unwrap();
 }
 
