@@ -5,6 +5,11 @@ use iron::prelude::*;
 use iron::status;
 use router::Router;
 
+const INSTANCE_NAME: &str = "winnie";
+const SPOOFED_VERSION: &str = "1.4.1";
+
+const SENSOR_IP: &str = "";
+
 fn main() {
     let mut router = Router::new();
     router.get("/", handler, "index");
@@ -12,18 +17,20 @@ fn main() {
     router.get("/_search", fake_search, "search");
 
     fn handler(_: &mut Request) -> IronResult<Response> {
-        let banner = r#"{
+        let mut banner = String::from(r#"{
         "status" : 200,
-        "name" : "%s",
+        "name" : "%instance_name",
         "cluster_name" : "elasticsearch",
         "version" : {
-            "number" : "%s",
+            "number" : "%spoofed_version",
             "build_hash" : "89d3241d670db65f994242c8e838b169779e2d4",
             "build_snapshot" : false,
             "lucene_version" : "4.10.2"
         },
         "tagline" : "You Know, for Search"
-}"#;
+}"#);
+        banner = banner.replace("%instance_name", INSTANCE_NAME);
+        banner = banner.replace("%spoofed_version", SPOOFED_VERSION);
         Ok(Response::with((status::Ok, banner)))
     }
 
