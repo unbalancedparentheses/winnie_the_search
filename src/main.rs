@@ -7,8 +7,7 @@ use router::Router;
 
 const INSTANCE_NAME: &str = "winnie";
 const SPOOFED_VERSION: &str = "1.4.1";
-
-const SENSOR_IP: &str = "";
+const SENSOR_IP: &str = "1.1.1.1";
 
 fn main() {
     let mut router = Router::new();
@@ -35,18 +34,18 @@ fn main() {
     }
 
     fn fake_nodes(_: &mut Request) -> IronResult<Response> {
-        let response = r#"{
+        let mut response = String::from(r#"{
         "cluster_name" : "elasticsearch",
         "nodes" : {
             "x1JG6g9PRHy6ClCOO2-C4g" : {
-              "name" : "%s",
+              "name" : "%instance_name",
               "transport_address" : "inet[/
-			%s:9300]",
+			%sensor_ip:9300]",
               "host" : "elk",
               "ip" : "127.0.1.1",
-              "version" : "%s",
+              "version" : "%spoofed_version",
               "build" : "89d3241",
-              "http_address" : "inet[/%s:9200]",
+              "http_address" : "inet[/%sensor_ip:9200]",
               "os" : {
                 "refresh_interval_in_millis" : 1000,
                 "available_processors" : 12,
@@ -68,22 +67,26 @@ fn main() {
               "network" : {
                 "refresh_interval_in_millis" : 5000,
                 "primary_interface" : {
-                  "address" : "%s",
+                  "address" : "%sensor_ip",
                   "name" : "eth0",
                   "mac_address" : "08:01:c7:3F:15:DD"
                 }
               },
               "transport" : {
                 "bound_address" : "inet[/0:0:0:0:0:0:0:0:9300]",
-                "publish_address" : "inet[/%s:9300]"
+                "publish_address" : "inet[/%sensor_ip:9300]"
               },
               "http" : {
                 "bound_address" : "inet[/0:0:0:0:0:0:0:0:9200]",
-                "publish_address" : "inet[/%s:9200]",
+                "publish_address" : "inet[/%sensor_ip:9200]",
                 "max_content_length_in_bytes" : 104857600
               }}
             }
-}"#;
+}"#);
+        response = response.replace("%instance_name", INSTANCE_NAME);
+        response = response.replace("%spoofed_version", SPOOFED_VERSION);
+        response = response.replace("%sensor_ip", SENSOR_IP);
+        
         Ok(Response::with((status::Ok, response)))
     }
 
