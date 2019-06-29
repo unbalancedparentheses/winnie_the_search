@@ -1,16 +1,19 @@
 extern crate iron;
 extern crate router;
+extern crate chrono;
 
 use iron::prelude::*;
 use iron::status;
 use router::Router;
+use chrono::prelude::*;
 
 const INSTANCE_NAME: &str = "winnie";
 const SPOOFED_VERSION: &str = "1.4.1";
 const SENSOR_IP: &str = "1.1.1.1";
 
 fn main() {
-    println!("winnie the search started");
+    let local: DateTime<Local> = Local::now();
+    println!("winnie the search started at {}", local.to_string());
     
     let mut router = Router::new();
     router.get("/", handler, "index");
@@ -18,7 +21,8 @@ fn main() {
     router.get("/_search", fake_search, "search");
 
     fn handler(request: &mut Request) -> IronResult<Response> {
-        println!("Got request from IP: {}", request.remote_addr);
+        let local: DateTime<Local> = Local::now();
+        println!("{}: {} request from {} to /", local.to_string(), request.method, request.remote_addr);
         
         let mut banner = String::from(r#"{
         "status" : 200,
@@ -38,7 +42,8 @@ fn main() {
     }
 
     fn fake_nodes(request: &mut Request) -> IronResult<Response> {
-        println!("Got request from IP: {}", request.remote_addr);
+        let local: DateTime<Local> = Local::now();
+        println!("{}: {} request from {} to /_nodes", local.to_string(), request.method, request.remote_addr);
         
         let mut response = String::from(r#"{
         "cluster_name" : "elasticsearch",
@@ -97,7 +102,8 @@ fn main() {
     }
 
     fn fake_search(request: &mut Request) -> IronResult<Response> {
-        println!("Got request from IP: {}", request.remote_addr);
+        let local: DateTime<Local> = Local::now();
+        println!("{}: {} request from {} to /_nodes", local.to_string(), request.method, request.remote_addr);
         
         let response = r#"{
         "took" : 6,
@@ -125,4 +131,3 @@ fn main() {
 
     let _server = Iron::new(router).http("0.0.0.0:3000").unwrap();
 }
-
